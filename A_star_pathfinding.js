@@ -52,12 +52,12 @@ function draw(){
                 fill(255);
                 rect(x, y, resolution, resolution);
             }
-            else if (grid[i][j] == 3){
-                fill(0, 0, 255);
-                rect(x, y, resolution, resolution);
-            }
             else if (grid[i][j] == 2){
                 fill(255, 0, 0);
+                rect(x, y, resolution, resolution);
+            }
+            else if (grid[i][j] == 3){
+                fill('#008CBA');
                 rect(x, y, resolution, resolution);
             }
             else{
@@ -71,17 +71,17 @@ function draw(){
 function mousePressed(){
     let x = floor(mouseX - (mouseX % 50));
     let y = floor(mouseY - (mouseY % 50));
-    console.log(mouseX,mouseY);
+    // console.log(mouseX, mouseY);
     if (x < width && y < height){
-        if (grid[x/resolution][y/resolution] == 0 && count_red == 0){ // this means that when a white square is clicked it turns into a black one
+        if (grid[x/resolution][y/resolution] == 0 && count_red == 0 && count_blue == 0){ // this means that when a white square is clicked it turns into a black one
             grid[x/resolution][y/resolution] = 1;
         }
         
-        else if(grid[x/resolution][y/resolution] >= 0 && count_red > 0){
+        else if(grid[x/resolution][y/resolution] >= 0 && count_red == 1 && count_blue == 0){
             grid[x/resolution][y/resolution] = 2;
             count_red = 0;
         }
-        else if (grid[x/resolution][y/resolution] > 0 && count_blue > 0){
+        else if (grid[x/resolution][y/resolution] >= 0 && count_blue == 1 && count_red == 0){
             grid[x/resolution][y/resolution] = 3;
             count_blue = 0;
         }
@@ -89,10 +89,10 @@ function mousePressed(){
             grid[x/resolution][y/resolution] = 0;
         }
     }
-    else if ((mouseX < 635 || mouseX > 500) && (y > -55 || y < -6) && count_red == 0){ // red botton pressed ---> now select the start red cell
-        count_red++;       
+    else if ((mouseX < 637 && mouseX > 500) && (mouseY > -150 && mouseY < -80) && count_red == 0){ // red botton pressed ---> now select the start red cell
+        count_red++; 
     }
-    else if ((mouseX < 637 || mouseX > 500) && (y > -114 || y < -70) && count_blue == 0){ // red botton pressed ---> now select the start red cell
-        count_blue++;       
+    else if ((mouseX < 600 && mouseX > 500) && (mouseY > -73 && mouseY < -6) && count_blue == 0){ // blue botton pressed ---> now select the start red cell
+        count_blue++;
     }
 }
