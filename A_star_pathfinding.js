@@ -53,10 +53,14 @@ function g_cost(start, x, y){
 }
 
 function a_star(grid, start, end){
-    console.log("Lo start è", start);
-    console.log("L'end è", end);
-    let next_grid = 0;
-    for (let i = start[0] - (start[0] % (start[0] - 1)); i <= start[0] + ((start[0] + 1) % grid.length) / (start[0] + 1); i++){
+    if (start[0] == end[0] && start[1] == end[1]){
+        grid[end[0]][end[1]] = 3;
+        return grid;
+    }
+    // console.log("Lo start è", start);
+    // console.log("L'end è", end);
+    let next_grid = [[], []];
+    for (let i = Math.abs(start[0]-1)%(start[0]+1); i <= start[0] + ((start[0] + 1) % grid.length) / (start[0] + 1); i++){
         /* 
         Here next_grid is a 2D array in which are stored in the first array the value of the f_cost function (f = g+h), and the second array 
         a tuple which contains the coordinates of the cells evalueted.
@@ -64,39 +68,26 @@ function a_star(grid, start, end){
         #ToDo: what to do if there are cells with the same f_cost?
         Then the new cell will be the new start and it will loop again until the cell becomes the end cell then noLoop()
         */
-        next_grid = [[], []];
-        console.log("I'm Here");
-        // let new_grid = grid;
-        for (let j = start[1] - (start[1] % (start[1] - 1)); j <= start[1] + ((start[1] + 1) % grid.length) / (start[1] + 1); j++){
-            console.log(i, j); // There is a mistake here: when j or i = 1 there is a division by 0... #ToDo
-            // if (i == start[0] && j == start[1]){
-            //     continue; // maybe break it's better: to check
-            // }            
-            if (grid[i][j] == 0 || grid[i][j] == 4){ // || grid[i][j] == 3
+        for (let j = Math.abs(start[1]-1)%(start[1]+1); j <= start[1] + ((start[1] + 1) % grid.length) / (start[1] + 1); j++){            
+            if (grid[i][j] == 0 || grid[i][j] == 3){ // || grid[i][j] == 3
                 let g = g_cost(start, i, j);
                 let h = h_cost(end, i, j);
                 let f = g + h;
                 next_grid[0].push(f);
                 next_grid[1].push([i, j]);
-                grid[i][j] = 4; // I wonder if now the grid is interpreted as a global value, so it changes, or not
-            }
-            else{
-                continue;
             }
         }
     }
-    console.log(next_grid);
-    const min_f = (Math.min.apply(null, next_grid[0]));
-    console.log("Il minimo vale", min_f);
+    // console.log(next_grid);
+    let min_f = (Math.min.apply(null, next_grid[0]));
+    // console.log("Il minimo vale", min_f);
     let temp = next_grid[0];
     let temp_index = temp.indexOf(min_f);
-    console.log("L'indice del minimo vale", temp_index);
+    // console.log("L'indice del minimo vale", temp_index);
     index_of_new_start = next_grid[1][temp_index];
     start = index_of_new_start;
-    if (start === end){
-        return grid;
-    }
-    a_star(grid, start, end);
+    grid[start[0]][start[1]] = 4;
+    return a_star(grid, start, end);
 }
 
 
@@ -140,7 +131,7 @@ function draw(){
         }
     }
     if (start != 0 && end != 0 && start_button != 0){
-        a_star(grid, start, end);
+        grid = a_star(grid, start, end);
         start_button = 0;
     }
 }
