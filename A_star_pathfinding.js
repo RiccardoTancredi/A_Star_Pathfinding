@@ -118,6 +118,7 @@ function setup() {
   buttonStartCell.addEventListener("click", () => ++count_red);
   buttonEndCell.addEventListener("click", () => ++count_blue);
   buttonStartPath.addEventListener("click", () => ++start_button);
+
 }
 
 function draw() {
