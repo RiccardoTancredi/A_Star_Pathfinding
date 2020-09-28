@@ -110,10 +110,11 @@ function setup() {
   // Arrow functions
   // DOM manipulations and events listener
   // Array destructuring
-
-  let [buttonStartCell] = document.getElementsByClassName("button button1");
-  let [buttonEndCell] = document.getElementsByClassName("button button2");
-  let [buttonStartPath] = document.getElementsByClassName("button button3");
+  let [
+    buttonStartCell,
+    buttonEndCell,
+    buttonStartPath,
+  ] = document.getElementsByTagName("BUTTON");
   buttonStartCell.addEventListener("click", () => ++count_red);
   buttonEndCell.addEventListener("click", () => ++count_blue);
   buttonStartPath.addEventListener("click", () => ++start_button);
