@@ -50,10 +50,12 @@ function g_cost(start, x, y) {
   return distance_from_start;
 }
 
-function a_star(grid, start, end, collection_of_grids) {
+let number_of_patterns_found = 0;
+
+function a_star(grid, start, end, collection_of_grids = []) {
 
   /*
-  I have a new idea: instead of doing what the program is actually doing, I was thinking of let the programm randomly decide a free cell, and then try all the possibility.
+  I have a new idea: instead of doing what the program is actually doing, I was thinking to let the programm randomly decide a free cell, and then try all the possibility.
   It will eventually arrive at the end cell. When this appens it starts again. The final grid will be the one with less green cells
   */
 
@@ -61,8 +63,11 @@ function a_star(grid, start, end, collection_of_grids) {
     if (start[0] == end[0] && start[1] == end[1]) {
       grid[end[0]][end[1]] = 3;
       console.log("A pattern has been found!");
-      var temp_grid = Array.from(grid);
-      collection_of_grids.push(temp_grid);
+      number_of_patterns_found += 1,
+      collection_of_grids.push([]);
+      // var temp_grid = Array.from(grid);
+      collection_of_grids[number_of_patterns_found].push(Array.from(grid[0]));
+      collection_of_grids[number_of_patterns_found].push(Array.from(grid[1]));
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           if (grid[i][j] == 2) {
