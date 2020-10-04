@@ -2,9 +2,9 @@
 //   [0, 1, 2, 3, 4, 5],
 //   [6, 7, 8, 9, 10, 11],
 // ];
-// let b = [[], []];
-// b[0].push(Array.from(a[0]));
-// b[0].push(Array.from(a[1]));
+// let b = [];
+// b.push(Array.from(a[0]));
+// b.push(Array.from(a[1]));
 // console.log("a vale ", a);
 // console.log("b vale ", b);
 // let i = 0;
@@ -13,10 +13,9 @@
 //   a[1][i] += 1;
 //   i++;
 // }
-// b[1].push(Array.from(a[0]));
-// b[1].push(Array.from(a[1]));
+// b.push(Array.from(a[0]));
+// b.push(Array.from(a[1]));
 // console.log(b.length);
-
 
 function make2DArray(rows, cols) {
   let arr = new Array(cols);
@@ -47,10 +46,14 @@ function black_or_white(grid, cols) {
 }
 let cols = 10;
 let rows = 10;
-grid = black_or_white(make2DArray(rows, cols), cols);
+let grid = black_or_white(make2DArray(rows, cols), cols);
+const copyWithAssign = make2DArray(rows, cols); // Changes to array will not change copyWithAssign
+for (let i = 0; i < grid.length; i++) {
+  Object.assign(copyWithAssign[i], grid[i]); // Object.assign(target, source)
+}
 console.log(grid);
 let b = [];
-b.push(Array.from(grid));
+b.push(Array.from(copyWithAssign));
 console.log(b);
 for (let j = 0; j < grid.length; j++) {
   for (let i = 0; i < grid[j].length; i++) {
@@ -58,6 +61,6 @@ for (let j = 0; j < grid.length; j++) {
   }
 }
 b.push(Array.from(grid));
-console.log(b);
+console.log("This is b: ", b);
 
-// NOPE
+// YES

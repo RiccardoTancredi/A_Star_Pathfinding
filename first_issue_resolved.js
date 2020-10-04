@@ -53,7 +53,6 @@ function g_cost(start, x, y) {
 let number_of_patterns_found = 0;
 
 function a_star(grid, start, end, collection_of_grids = []) {
-
   /*
   I have a new idea: instead of doing what the program is actually doing, I was thinking to let the programm randomly decide a free cell, and then try all the possibility.
   It will eventually arrive at the end cell. When this appens it starts again. The final grid will be the one with less green cells
@@ -63,11 +62,15 @@ function a_star(grid, start, end, collection_of_grids = []) {
     if (start[0] == end[0] && start[1] == end[1]) {
       grid[end[0]][end[1]] = 3;
       console.log("A pattern has been found!");
-      number_of_patterns_found += 1,
-      collection_of_grids.push([]);
+      number_of_patterns_found += 1;
+      const copyWithAssign = make2DArray(rows, cols); // Changes to array will not change copyWithAssign
+      for (let i = 0; i < grid.length; i++) {
+        Object.assign(copyWithAssign[i], grid[i]); // Object.assign(target, source)
+      }
+      collection_of_grids.push(copyWithAssign);
       // var temp_grid = Array.from(grid);
-      collection_of_grids[number_of_patterns_found].push(Array.from(grid[0]));
-      collection_of_grids[number_of_patterns_found].push(Array.from(grid[1]));
+      // collection_of_grids[number_of_patterns_found].push(Array.from(grid[0]));
+      // collection_of_grids[number_of_patterns_found].push(Array.from(grid[1]));
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           if (grid[i][j] == 2) {
@@ -148,17 +151,17 @@ function a_star(grid, start, end, collection_of_grids = []) {
         }
         patterns.push(number_of_green_cells);
       }
-      console.log(patterns);
+      console.log("Patterns = ", patterns);
       let least_number_of_green_cells = Math.min.apply(null, patterns);
       grid = collection_of_grids[patterns.indexOf(least_number_of_green_cells)]; //final grid
-      console.log(collection_of_grids);
+      console.log("Collection of Grids = ", collection_of_grids);
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           if (grid[i][j] == 4) {
             grid[i][j] = 0;
           }
           if (grid[i][j] == 5) {
-            grid[i][j] = 4; 
+            grid[i][j] = 4;
           }
         }
       }
@@ -168,8 +171,7 @@ function a_star(grid, start, end, collection_of_grids = []) {
   }
   if (collection_of_grids.length === 0) {
     throw "There is No Other Pattern Available";
-  }
-  else {
+  } else {
     throw "The Best Pattern Has Been Found";
   }
 }
