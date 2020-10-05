@@ -15,7 +15,7 @@ function black_or_white(grid, cols) {
       if (grid[i][j] == 1) {
         number += 1;
       }
-      if (number == floor(cols / 5)) {
+      if (number == floor(cols / 2)) {
         for (let k = i; k < grid[j].length; k++) {
           grid[k][j] = 0;
         }
@@ -50,33 +50,52 @@ function g_cost(start, x, y) {
   return distance_from_start;
 }
 
-function a_star(grid, start, end, pattern_of_patterns) {
+let number_of_patterns_found = 0;
+
+function a_star(grid, start, end, collection_of_grids = []) {
+  /*
+  This is a recursive function: basically the programm evaluate the cell near the start-red cell and it assigns an empiric value to particualar cell considered, based on value of
+  the g_cost + h_cost = f_cost functions, which represent the distance from the origin and from the end of the evalueted cell.
+  This function is a big try and catch, bacause if no pattern is found, it raises an error, see below. Otherwise, when the "best" cell (in terms of f_cost) is taken, it is set to the
+  new start and here the recursione starts. When a new cell is evalueted it is compared thìo its neighbour and the best one becomes the new start. At the end, when the 
+  start_cell == end_cell, the program returts all the cells the have been start, printed in red.
+  Sometimes, it happens that the program select the best cell, but the longest pattern. I mean that the cell evalueted has the lowest f_cost, but the total amount of green cells are more 
+  than the ones needed. The collection_of_grid Array does this: it stores all the patterns found, and then the one with the lowest amount of green cells is chosen. So if there is a unique pattern,
+  it is selected; if there are two, the one with less green cells is the new grid. If there is no patterns, an error raises. To understand better the situation I'm describing there is a
+  picture in the file which shows a particoular situation in which the best pattern is chosen, even though the first green cell is not the one with the lowest f_cost between the cells around the start cell.
+  */
   try {
-    console.log("I'm here in the first try");
     if (start[0] == end[0] && start[1] == end[1]) {
       grid[end[0]][end[1]] = 3;
-      console.log("A pattern has been found!");
-      pattern_of_patterns.push(grid);
+      // console.log("A pattern has been found!");
+      number_of_patterns_found += 1;
+      const copyWithAssign = make2DArray(rows, cols); // Changes to array will not change copyWithAssign
+      for (let i = 0; i < grid.length; i++) {
+        Object.assign(copyWithAssign[i], grid[i]); // Object.assign(target, source)
+      }
+      collection_of_grids.push(copyWithAssign);
+      // var temp_grid = Array.from(grid);
+      // collection_of_grids[number_of_patterns_found].push(Array.from(grid[0]));
+      // collection_of_grids[number_of_patterns_found].push(Array.from(grid[1]));
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           if (grid[i][j] == 2) {
             start = [i, j];
           }
-          // Here there is something missing
-          /*
-          The idea in all of this part is to collect all the possible patterns in an array called pattern_of_patterns. Then we will select the pattern with the least
-          number of green cells, represented with grid[i][j] = 4. Now I have to find a better way to do the thing a the bottom here, because I don't want tp change 
-          the value grid[i][j] to 5, because even if a cell has become green in a pattern it could steel be green in another one.
-          I can not say grid[i][j] = 4 because this would lead to an infinte loop, because the programm would always analyze the same pattern over and over again.
-          
-                                                                              #ToDo
-          */
           if (grid[i][j] == 4) {
             grid[i][j] = 5; // change green to other in order to not be analyzed again later
           }
         }
       }
-      return a_star(grid, start, end, pattern_of_patterns);
+      // console.log(grid);
+      // console.log(collection_of_grids);
+      const copyWithAssign2 = make2DArray(rows, cols);
+      for (let i = 0; i < grid.length; i++) {
+        Object.assign(copyWithAssign2[i], grid[i]); // Object.assign(target, source)
+      }
+      collection_of_grids.push(copyWithAssign2);
+      return a_star(grid, start, end, collection_of_grids);
+      // return grid;
     }
     // console.log("Lo start è", start);
     // console.log("L'end è", end);
@@ -87,12 +106,12 @@ function a_star(grid, start, end, pattern_of_patterns) {
       i++
     ) {
       /* 
-        Here next_grid is a 2D array in which are stored in the first array the value of the f_cost function (f = g+h), and the second array 
-        a tuple which contains the coordinates of the cells evalueted.
-        The goal here is to store all of these values, then find the shortest f_cost value so move to that cell
-        #ToDo: what to do if there are cells with the same f_cost?
-        Then the new cell will be the new start and it will loop again until the cell becomes the end cell then noLoop()
-      */
+          Here next_grid is a 2D array in which are stored in the first array the value of the f_cost function (f = g+h), and the second array 
+          a tuple which contains the coordinates of the cells evalueted.
+          The goal here is to store all of these values, then find the shortest f_cost value so move to that cell
+          #ToDo: what to do if there are cells with the same f_cost?
+          Then the new cell will be the new start and it will loop again until the cell becomes the end cell then noLoop()
+          */
       for (
         let j = Math.abs(start[1] - 1) % (start[1] + 1);
         j <= start[1] + ((start[1] + 1) % grid.length) / (start[1] + 1);
@@ -106,6 +125,16 @@ function a_star(grid, start, end, pattern_of_patterns) {
           next_grid[0].push(f);
           next_grid[1].push([i, j]);
         }
+        /*
+        The idea here is to make the program analyze the already green cell if there are not others available
+        */
+        // else if (grid[i][j] == 4) {
+        //   let g = g_cost(start, i, j);
+        //   let h = h_cost(end, i, j);
+        //   let f = g + h;
+        //   next_grid[0].push(f);
+        //   next_grid[1].push([i, j]);
+        // }
       }
     }
     // console.log(next_grid);
@@ -116,46 +145,50 @@ function a_star(grid, start, end, pattern_of_patterns) {
     // console.log("L'indice del minimo vale", temp_index);
     index_of_new_start = next_grid[1][temp_index];
     start = index_of_new_start;
-    grid[start[0]][start[1]] = 4; // green cell
-    // if (pattern_of_patterns.length == 0) {
-    //   pattern_of_patterns = [];
-    // }
-    return a_star(grid, start, end, pattern_of_patterns);
+    grid[start[0]][start[1]] = 4;
+    return a_star(grid, start, end, collection_of_grids);
   } catch {
-    console.log("I'm here in catch");
-    try {
-      console.log("I'm here in the second try");
+    // console.log("Collection of Grids = ", collection_of_grids);
+    // console.log("I'm here in catch");
+    if (collection_of_grids.length >= 1) {
       let patterns = [];
-      for (let k = 0; k < pattern_of_patterns.length; k++) {
+      for (let k = 0; k < collection_of_grids.length; k += 2) {
         let number_of_green_cells = 0;
         for (let i = 0; i < rows; i++) {
           for (let j = 0; j < cols; j++) {
-            if (pattern_of_patterns[k][i][j] == 4) {
+            if (collection_of_grids[k][i][j] == 4) {
               number_of_green_cells += 1;
             }
           }
         }
         patterns.push(number_of_green_cells);
       }
-      console.log(patterns);
+      // console.log("Patterns = ", patterns);
       let least_number_of_green_cells = Math.min.apply(null, patterns);
-      grid = pattern_of_patterns[patterns.indexOf(least_number_of_green_cells)]; //final grid
-      // here I have to make green again the cells that where green
-      // there's a loop that I have to stop somehow
-
-      // for (let i = 0; i < rows; i++) {
-      //   for (let j = 0; j < cols; j++) {
-      //     if (grid[i][j] == 5) {          // I think I don't need this because the grids added in pattern_of_patterns are already good for being drawn
-      //       grid[i][j] = 4;
-      //     }
-      //   }
-      // }
-      console.log(pattern_of_patterns);
-
+      let grid =
+        collection_of_grids[2 * patterns.indexOf(least_number_of_green_cells)]; //final grid
+      // console.log("Collection of Grids = ", collection_of_grids);
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          // if (grid[i][j] == 4) {
+          //   grid[i][j] = 0;
+          // }
+          if (grid[i][j] == 5) {
+            grid[i][j] = 0;
+          }
+        }
+      }
+      console.log("The Best Pattern Has Been Found!");
+      console.log("DONE!");
       return grid;
-    } catch {}
-    throw "There is no pattern available; Reload and try again!";
+    }
   }
+  if (collection_of_grids.length === 0) {
+    throw "There is No Other Pattern Available";
+  }
+  // else {
+  //   throw "The Best Pattern Has Been Found";
+  // }
 }
 
 function setup() {
@@ -163,8 +196,6 @@ function setup() {
   cols = width / resolution;
   rows = height / resolution;
   grid = black_or_white(make2DArray(rows, cols), cols);
-  console.log("Let's start");
-  console.log(grid);
 }
 
 function draw() {
@@ -196,7 +227,7 @@ function draw() {
   }
   if (start != 0 && end != 0 && start_button != 0) {
     grid = a_star(grid, start, end, []);
-    start_button = 10;
+    start_button = 0;
   }
 }
 
