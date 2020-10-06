@@ -176,10 +176,16 @@ function a_star(grid, start, end, collection_of_grids = []) {
           if (grid[i][j] == 5) {
             grid[i][j] = 0;
           }
+          if(grid[i][j] == 2){
+            start = [i, j];
+          }
+          if(grid[i][j] == 3){
+            end = [i, j];
+          }
         }
       }
-      console.log("The Best Pattern Has Been Found!");
-      console.log("DONE!");
+      // console.log("The Best Pattern Has Been Found!");
+      // console.log("DONE!");
       return grid;
     }
   }
@@ -226,8 +232,71 @@ function draw() {
     }
   }
   if (start != 0 && end != 0 && start_button != 0) {
-    grid = a_star(grid, start, end, []);
+    /*
+    When the green botton is pressed, the program starts and the recursive a_star function is called.
+    Here 2 more grids are created: the first, grid_1, equal to the initial grid, and the second, grid_2, equal to the initial grid, but with the start and the stop cell swapped.
+    In the end, so after the a_star function has selected the best pattern for both situations, the new grid is equal to the pattern, grid_1 or grid_2, with the least number of green cells.
+    The for loops here are made to change the start cell with the end cell and viceversa. It could/should be improved.
+    */
+    let green_grid_1 = 0;
+    let green_grid_2 = 0;
+    let grid_1 = make2DArray(rows, cols);
+    for (let i = 0; i < grid.length; i++) {
+      Object.assign(grid_1[i], grid[i]); // Object.assign(target, source)
+    }
+    grid_1 = a_star(grid_1, start, end, []);
+    let grid_2 = make2DArray(rows, cols);
+    for (let i = 0; i < grid.length; i++) {
+      Object.assign(grid_2[i], grid[i]); // Object.assign(target, source)
+    }
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (grid_2[i][j] == 2){
+          grid_2[i][j] = 7;
+        }
+        if (grid_2[i][j] == 3){
+          grid_2[i][j] = 2;
+          start = [i, j];
+        }
+        if (grid_2[i][j] == 7){
+          grid_2[i][j] = 3;
+          end = [i, j];
+        }
+      }
+    }
+    grid_2 = a_star(grid_2, start, end, []);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (grid_1[i][j] == 4){
+          green_grid_1 += 1;
+        }
+        if (grid_2[i][j] == 4){
+          green_grid_2 += 1;
+        }
+      }
+    }
+    if(green_grid_1 > green_grid_2){
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          if (grid_2[i][j] == 2){
+            grid_2[i][j] = 7;
+          }
+          if (grid_2[i][j] == 3){
+            grid_2[i][j] = 2;
+          }
+          if (grid_2[i][j] == 7){
+            grid_2[i][j] = 3;
+          }
+        }
+      }
+      grid = grid_2;
+    }
+    else {
+      grid = grid_1;
+    }
     start_button = 0;
+    console.log("The Best Pattern Has Been Found!");
+    console.log("DONE!");
   }
 }
 
