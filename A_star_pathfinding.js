@@ -202,6 +202,20 @@ function setup() {
   cols = width / resolution;
   rows = height / resolution;
   grid = black_or_white(make2DArray(rows, cols), cols);
+
+  // Cose da sapere per capire quete righe:
+  // Arrow functions
+  // DOM manipulations and events listener
+  // Array destructuring
+  let [
+    buttonStartCell,
+    buttonEndCell,
+    buttonStartPath,
+  ] = document.getElementsByTagName("BUTTON");
+  buttonStartCell.addEventListener("click", () => ++count_red);
+  buttonEndCell.addEventListener("click", () => ++count_blue);
+  buttonStartPath.addEventListener("click", () => ++start_button);
+
 }
 
 function draw() {
@@ -211,23 +225,34 @@ function draw() {
     for (let j = 0; j < cols; j++) {
       let x = i * resolution;
       let y = j * resolution;
-      if (grid[i][j] == 0) {
-        fill(255);
-        rect(x, y, resolution, resolution);
-      } else if (grid[i][j] == 2) {
-        start = [i, j];
-        fill(255, 0, 0);
-        rect(x, y, resolution, resolution);
-      } else if (grid[i][j] == 3) {
-        end = [i, j];
-        fill("#008CBA");
-        rect(x, y, resolution, resolution);
-      } else if (grid[i][j] == 4) {
-        fill(28, 216, 11);
-        rect(x, y, resolution, resolution);
-      } else {
-        fill(0);
-        rect(x, y, resolution, resolution);
+      switch (grid[i][j]) {
+        case 0:
+          fill(255);
+          rect(x, y, resolution, resolution);
+          break;
+        case 1:
+          fill(0);
+          rect(x, y, resolution, resolution);
+          break;
+        case 2:
+          start = [i, j];
+          fill(255, 0, 0);
+          rect(x, y, resolution, resolution);
+          break;
+        case 3:
+          end = [i, j];
+          fill("#008CBA");
+          rect(x, y, resolution, resolution);
+          break;
+        case 4:
+          fill(28, 216, 11);
+          rect(x, y, resolution, resolution);
+          break;
+        default:
+          //why a different case for black cells?
+          fill(0);
+          rect(x, y, resolution, resolution);
+          break;
       }
     }
   }
@@ -317,33 +342,5 @@ function mousePressed() {
     } else {
       grid[x / resolution][y / resolution] = 0;
     }
-  } else if (
-    mouseX < 610 &&
-    mouseX > 500 &&
-    mouseY > -210 &&
-    mouseY < -140 &&
-    count_red == 0
-  ) {
-    // red botton pressed ---> now select the start red cell
-    count_red++;
-  } else if (
-    mouseX < 610 &&
-    mouseX > 500 &&
-    mouseY > -135 &&
-    mouseY < -70 &&
-    count_blue == 0
-  ) {
-    // blue botton pressed ---> now select the start red cell
-    count_blue++;
-  } else if (
-    mouseX < 600 &&
-    mouseX > 499 &&
-    mouseY > -57 &&
-    mouseY < -4 &&
-    start_button == 0 &&
-    count_red > 0 &&
-    count_blue > 0
-  ) {
-    start_button++;
   }
 }
