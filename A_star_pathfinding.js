@@ -176,10 +176,10 @@ function a_star(grid, start, end, collection_of_grids = []) {
           if (grid[i][j] == 5) {
             grid[i][j] = 0;
           }
-          if(grid[i][j] == 2){
+          if (grid[i][j] == 2) {
             start = [i, j];
           }
-          if(grid[i][j] == 3){
+          if (grid[i][j] == 3) {
             end = [i, j];
           }
         }
@@ -189,9 +189,9 @@ function a_star(grid, start, end, collection_of_grids = []) {
       return grid;
     }
   }
-  if (collection_of_grids.length === 0) {
-    throw "There is No Other Pattern Available";
-  }
+  // if (collection_of_grids.length === 0) {
+  //   console.error("There is No Other Pattern Available");
+  // }
   // else {
   //   throw "The Best Pattern Has Been Found";
   // }
@@ -215,7 +215,6 @@ function setup() {
   buttonStartCell.addEventListener("click", () => ++count_red);
   buttonEndCell.addEventListener("click", () => ++count_blue);
   buttonStartPath.addEventListener("click", () => ++start_button);
-
 }
 
 function draw() {
@@ -276,52 +275,82 @@ function draw() {
     }
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        if (grid_2[i][j] == 2){
+        if (grid_2[i][j] == 2) {
           grid_2[i][j] = 7;
         }
-        if (grid_2[i][j] == 3){
+        if (grid_2[i][j] == 3) {
           grid_2[i][j] = 2;
           start = [i, j];
         }
-        if (grid_2[i][j] == 7){
+        if (grid_2[i][j] == 7) {
           grid_2[i][j] = 3;
           end = [i, j];
         }
       }
     }
     grid_2 = a_star(grid_2, start, end, []);
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        if (grid_1[i][j] == 4){
-          green_grid_1 += 1;
-        }
-        if (grid_2[i][j] == 4){
-          green_grid_2 += 1;
-        }
+    if (grid_1 == undefined && grid_2 == undefined) {
+      try{
+        1/0;
       }
-    }
-    if(green_grid_1 > green_grid_2){
+      catch{}
+      throw "There is No Other Pattern";
+    } else if (grid_1 == undefined) {
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
-          if (grid_2[i][j] == 2){
+          if (grid_2[i][j] == 2) {
             grid_2[i][j] = 7;
           }
-          if (grid_2[i][j] == 3){
+          if (grid_2[i][j] == 3) {
             grid_2[i][j] = 2;
           }
-          if (grid_2[i][j] == 7){
+          if (grid_2[i][j] == 7) {
             grid_2[i][j] = 3;
           }
         }
       }
       grid = grid_2;
-    }
-    else {
+      start_button = 0;
+      console.log("The Best Pattern Has Been Found!");
+      console.log("DONE!");
+    } else if (grid_2 == undefined) {
       grid = grid_1;
+      start_button = 0;
+      console.log("The Best Pattern Has Been Found!");
+      console.log("DONE!");
+    } else {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          if (grid_1[i][j] == 4) {
+            green_grid_1 += 1;
+          }
+          if (grid_2[i][j] == 4) {
+            green_grid_2 += 1;
+          }
+        }
+      }
+      if (green_grid_1 > green_grid_2) {
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            if (grid_2[i][j] == 2) {
+              grid_2[i][j] = 7;
+            }
+            if (grid_2[i][j] == 3) {
+              grid_2[i][j] = 2;
+            }
+            if (grid_2[i][j] == 7) {
+              grid_2[i][j] = 3;
+            }
+          }
+        }
+        grid = grid_2;
+      } else {
+        grid = grid_1;
+      }
+      start_button = 0;
+      console.log("The Best Pattern Has Been Found!");
+      console.log("DONE!");
     }
-    start_button = 0;
-    console.log("The Best Pattern Has Been Found!");
-    console.log("DONE!");
   }
 }
 
